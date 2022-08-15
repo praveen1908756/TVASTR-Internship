@@ -1,0 +1,58 @@
+-> In this paper, RCA framework called CloudRCA which makes use of multi-source data including KPI (key performance indicators), logs, topology and extracts important features via anomaly detection and log analysis techniques.
+-> The features are utilized in a knowledge-informed Bayesian network (KHBN).
+
+----
+----
+
+Proposed cloudRCA framework:
+	-> Integration of three sources: Metrics, logs, module dependency relation in confuguration management database (CMDB).
+	-> Data from multiple sources are converted into unified feature matrices through time series anomaly detection and log clustering algorithms.
+
+----
+
+Metrics anomaly detection: 
+	-> Extraction of anomalous metrics collected from monitoring systems for the basis of RCA.
+	-> Four typical anomalies: system breakdowns, change of mean, change of variance, change of long-term trend.
+	-> Period length of time-series is identified. 
+	-> First we have to decompose time series into tread, seasonality and remainder components. Traditional STL (Seasonal-Trend decomposition using Loess) proposed in suffers from less flexibility when seasonality period is long and is vulnerable to
+noises. So, RobustSTL is used. It first extracts the trend component by solving a regression problem using the least absolute deviation loss with sparse regularization, then estimates the seasonality component with a non-local seasonal filtering.
+
+----
+
+Log templates Extraction and Clustering: 
+	-> Sheer volume, varying syntax and semantics makes log analysis a non-trivial task.
+	-> After standard preprocessing, templates are extracted by removing variables such as IP address, table name and interface IDs.
+	-> Incrementally trainable algo. called Adaptive Frequent Template tree (AFT-tree) is developed to obtain log templates automatically instead of using regular expression.
+	-> 
+
+
+
+why clustering algo. in online mode?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

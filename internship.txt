@@ -1,0 +1,158 @@
+Anomalous logs - 
+	-> word representation method
+	-> PU (+ve and unlabeled) learning
+	-> Machine learning classifier
+	-> Proposed - ILF (inverse location freq.) method
+
+KPI - key performance indicator (cpu/mem utilization), can indicate whether
+a service is anomalous or not (not that useful)
+
+Types of anomaly log identification - 
+	-> anomalous individual logs
+	-> anomalous log sequence
+
+Types of logs - 
+	-> Healthy logs
+	-> Anomalous logs
+
+Challenges faced while lableling logs - 
+	-> Partial labels: Anomalous and healthy logs are not labelled
+correctly due to the sheer number and triviality of logs. Thus leading
+to traditional machine learning algorithms to not being able to work.
+	-> New types of logs: Operators often conduct soft/firm-ware
+upgrades to introduce new features/ fix bugs. This can cause creation
+of new log types.
+	-> Feature construction: Estimating word weightage will not 
+always be true for logs.
+
+To address the abv prob. - LogClass is introduced
+	-> A framework to identify and classify anomalous logs based on
+partial labels.
+
+Two componenets of LogClass:
+	-> Offline learning: Preprocesses logs and generates feature vectors
+weighting with TF-ILF (term frequency - ILF). Applies PU, classification model
+to train anomalous identification model and a ML classifier to train an anomaly
+classification model.
+	-> Online identification and classification: Using the trained anomaly
+class. model, LogClass determines whether new log is anomalous or not.
+
+Evaluated based on: 
+	-> Real-world switch logs - F1 score => 99.56%
+	-> BGL (Blue gene/L super computer(public log dataset)) dataset - F1 score => 98%
+
+Log - A semi-structured text "printf" -ed by a network or service.
+
+Disadvantages of manually adding regular expression to identify anomalous logs - 
+	-> Inflexibility: They are too rigorous for anomalous logs. i.e., reg. exp.
+does not find anomalous logs if not in exact format. Two different devices may have very
+semantics but have different syntaxes, can produce inaccuracies.
+	-> Labor intensive: All reg. exp. are manually configured and updated by operators.
+Hence, this requires huge amounts of work. And 20-45% of logging statements change throughout
+their lifetime.
+
+LogClass design:
+	-> Combination of important words
+	-> First, need to identify the 'important' words. Identify and assign higher weights 
+to these words.
+	-> Offline component: 
+		=> First preprocesses and filters parameters.
+		=> Constructs features using bag-of-wordsd model, weighted by TF-ILF method.
+		=> Trains PU binary classifier, and SVM multiclass classifier.
+	-> Online component: 
+		=> Preprocesses real-time logs and extracts features.
+		=> Determines whether a log is anomalous using PU trained classifier, if yes,
+it classifies into a anomaly category using SVM.
+
+Log Preprocessing: 
+	Processing dataset using domain knowledge to improve performance of log
+parsing and in turn increasing anomalous log iden./ class..
+
+Feature construction: 
+	Applying bag-of-words model to construct features from documents. i.e., 
+value of each element in vector denotes the estimated importance of a word.
+
+TF-IDF (term freq. inverse document freq.) is not suitable here. As importance 
+and occurence is inversely prop. for IDF.
+
+TF-ILF (TF inverse location freq.): more times a word occurs, more the weightage.
+ILF measures how many different locations a specific word appears at. Fewer number of
+different locations where a word appears, the more important the anomaly becomes.
+
+The more anomalous logs found in IDF, will decrease its weigtage and hence introducing 
+inaccuracies, whereas in ILF, the weightage of the word almost doesn't change.
+
+
+PU Learning-based binary classifier:
+	Under the assumption that labeled examples are selected randomly from +ve
+samples. PU model is trained on +ve and unlabeled examples, and predicts the probabilites
+of being +ve.
+
+Four are compared - Multiclass classifier:
+	-> SVM
+	-> Naive Bayes
+	-> Logistic Regressin
+	-> Decision Tree
+
+Python Files -
+init_params: parses args, initializes global parameters
+logclass: performs training and inference of LogClass
+compare_pu: compares robustness of LogClass
+train_binary: trains LogClass for log anomaly detection
+train_multi: trains LogClass for anomaly classification
+run_binary: Loads trained LogClass and detects anomalies
+decorators: prints
+
+COMMANDS:
+LogCLass - 
+	python -m LogClass.logclass --train --kfold 3 --logs_type "open_Apache" --raw_logs "D:\GitHub-Reposatories\Internship\LogClass\data\open_source_logs" --report macro
+
+Testing anomalous classification - 
+	python -m LogClass.train_multi --logs_type "open_Apache" --raw_logs "D:\GitHub-Reposatories\Internship\LogClass\data\open_source_logs" --kfold 10 --swap
+
+Comparing PU Learning - 
+	python -m LogClass.compare_pu --logs_type "open_zookeeper" --raw_logs "D:\GitHub-Reposatories\Internship\LogClass\data\open_source_logs" --binary_classifier regular --ratio 8 --step 1 --top_percentage 11 --kfold 3
+
+Train and Inference binary - 
+	python -m LogClass.comb_binary
+	python -m LogClass.comb_binary --kfold 3
+	python -m LogClass.comb_binary --kfold 3 --id "1"
+binary_sole - 
+	python -m LogClass.binary_sole --kfold 3  --train --raw_logs "D:\GitHub-Reposatories\Internship\LogClass\data\open_source_logs" --report macro
+
+
+Ignore - 
+	-> ID
+	-> TimeStamp
+	-> log_file_name
+	-> original_index
+	-> level
+	-> danger_words
+	-> danger
+	-> template
+	-> template_id
+	-> variables
+	-> encoded_numerical
+	-> encoded_cats
+	-> catergorical_variables
+	-> to_keep
+	-> rare_sequence
+	-> sequence
+	-> user_feedback_anomaly
+
+Consider - 
+	-> New template
+	-> seq/quant
+
+Mapping - 
+	-> XXXXXXXXXXXXXXXXX => Blanks
+	-> ParameterValue:0 
+	-> ParameterValue:1 
+	-> Seq/QuantXXXXXXX => Seq/Quant
+	-> NewTemplateXXXXX => NewTemplate
+
+
+
+
+
+
